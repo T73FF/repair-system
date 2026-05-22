@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y \
     mysqli \
     gd \
     zip \
-    bcmath
+    bcmath \
+    pdo_pgsql
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -27,6 +28,7 @@ RUN php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache
 
+# 👇 ДОБАВЬ ЭТИ ДВЕ СТРОЧКИ 👇
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
