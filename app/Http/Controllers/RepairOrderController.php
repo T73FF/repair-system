@@ -108,28 +108,30 @@ class RepairOrderController extends Controller
 
         // ==================== ОТПРАВКА PUSH-УВЕДОМЛЕНИЯ ====================
         $client = $order->client;
+        // ВРЕМЕННО: прямая отправка без очереди
         if ($client && $client->user) {
-            $user = $client->user;
-            if ($user->pushSubscriptions()->exists()) {
-                $statusNames = [
-                    'new' => '📋 Новая',
-                    'diagnostic' => '🔍 На диагностике',
-                    'in_progress' => '🔧 В работе',
-                    'waiting_parts' => '⏳ Ожидает запчасти',
-                    'ready' => '✅ Готов к выдаче',
-                    'issued' => '🎉 Выдан',
-                    'cancelled' => '❌ Отменена',
-                ];
-                
-                $statusText = $statusNames[$request->status] ?? $request->status;
-                
-                $user->notify(new TestPushNotification(
-                    'Статус заявки изменён',
-                    "Заявка №{$order->order_number} → {$statusText}",
-                    route('client.order.show', $order)
-                ));
-            }
-        }
+        $user = $client->user;
+        if ($user->pushSubscriptions()->exists()) {
+        $statusNames = [
+            'new' => '📋 Новая',
+            'diagnostic' => '🔍 На диагностике',
+            'in_progress' => '🔧 В работе',
+            'waiting_parts' => '⏳ Ожидает запчасти',
+            'ready' => '✅ Готов к выдаче',
+            'issued' => '🎉 Выдан',
+            'cancelled' => '❌ Отменена',
+        ];
+        $statusText = $statusNames[$request->status] ?? $request->status;
+        
+        // Прямая отправка (минуя очередь)
+        $channel = new \NotificationChannels\WebPush\WebPushChannel();
+        $channel->send($user, new TestPushNotification(
+            'Статус заявки изменён',
+            "Заявка №{$order->order_number} → {$statusText}",
+            route('client.order.show', $order)
+        ));
+    }
+}
         // ==================================================================
 
         $order->statusHistory()->create([
