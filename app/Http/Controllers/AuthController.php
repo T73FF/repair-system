@@ -24,7 +24,12 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+            
+            if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('manager') || auth()->user()->hasRole('technician')) {
+                return redirect()->intended('/dashboard');
+            } else {
+                return redirect()->intended('/client/dashboard');
+            }
         }
 
         return back()->withErrors([
@@ -51,10 +56,9 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'role' => 'client', // по умолчанию клиент
+            'role' => 'client',
         ]);
 
-        // Создаём профиль клиента
         Client::create([
             'user_id' => $user->id,
             'name' => $request->name,
@@ -67,10 +71,11 @@ class AuthController extends Controller
         Auth::login($user);
 
         if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('manager') || auth()->user()->hasRole('technician')) {
-        return redirect()->intended('/dashboard');
+            return redirect()->intended('/dashboard');
         } else {
-        return redirect()->intended('/client/dashboard');
+            return redirect()->intended('/client/dashboard');
         }
+    }
 
     public function logout(Request $request)
     {
