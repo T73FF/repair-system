@@ -162,7 +162,7 @@
         </div>
     @endif
 
-    @if(isset($qrCodeBase64))
+    @if(isset($qrCodeBase64) && $qrCodeBase64)
     <div class="qr-code" style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ddd;">
     <img src="{{ $qrCodeBase64 }}" width="150" alt="QR-код проверки чека">
     <p style="font-size: 10px; color: #666;">Отсканируйте QR-код для проверки подлинности чека</p>

@@ -231,25 +231,16 @@ public function downloadInvoice(RepairOrder $order)
     
     $order->load(['client', 'equipment', 'items', 'spareParts.sparePart']);
     
-    // Генерируем QR-код и сохраняем как PNG
-    $qrCodeImage = QrCode::format('png')
+    // Генерируем QR-код в формате SVG (не требует imagick/gd)
+    $qrCodeSvg = QrCode::format('svg')
         ->size(150)
         ->margin(2)
         ->generate(route('client.order.show', $order));
     
-    // Сохраняем временный файл
-    $tempPath = storage_path('app/temp_qr_' . $order->id . '.png');
-    file_put_contents($tempPath, $qrCodeImage);
-    
-    // Перекодируем в base64 для вставки в PDF
-    $qrCodeBase64 = 'data:image/png;base64,' . base64_encode($qrCodeImage);
+    // Кодируем в base64 для вставки в PDF
+    $qrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($qrCodeSvg);
     
     $pdf = \PDF::loadView('orders.invoice', compact('order', 'qrCodeBase64'));
-    
-    // Удаляем временный файл
-    if (file_exists($tempPath)) {
-        unlink($tempPath);
-    }
     
     return $pdf->download('cheque-' . $order->order_number . '.pdf');
 }
