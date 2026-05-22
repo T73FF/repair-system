@@ -123,9 +123,7 @@ class RepairOrderController extends Controller
         ];
         $statusText = $statusNames[$request->status] ?? $request->status;
         
-        // Прямая отправка (минуя очередь)
-        $channel = new \NotificationChannels\WebPush\WebPushChannel();
-        $channel->send($user, new TestPushNotification(
+        $user->notify(new TestPushNotification(
             'Статус заявки изменён',
             "Заявка №{$order->order_number} → {$statusText}",
             route('client.order.show', $order)
