@@ -3,6 +3,21 @@
     "builder": "railpack"
   },
   "php": {
-    "version": "8.2"
+    "extensions": [
+      "bcmath",
+      "ctype",
+      "curl",
+      "fileinfo",
+      "gd",
+      "json",
+      "mbstring",
+      "mysqli",
+      "pdo",
+      "pdo_mysql",
+      "tokenizer",
+      "xml",
+      "zip",
+      "gmp"
+    ]
   }
 }
