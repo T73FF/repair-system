@@ -1,0 +1,8 @@
+{
+  "build": {
+    "builder": "railpack"
+  },
+  "php": {
+    "version": "8.2"
+  }
+}
