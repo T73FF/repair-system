@@ -66,8 +66,11 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect('/dashboard');
-    }
+        if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('manager') || auth()->user()->hasRole('technician')) {
+        return redirect()->intended('/dashboard');
+        } else {
+        return redirect()->intended('/client/dashboard');
+        }
 
     public function logout(Request $request)
     {
